@@ -4,6 +4,7 @@ import net.therap.domain.Log;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,10 +14,9 @@ import java.util.regex.Pattern;
  * @since 3/7/18
  */
 public class FileProcessor {
-    private static final int TOTALHOURS = 24;
+    private static final int TOTAL_HOURS = 24;
 
-    public void process(String[] arguments)
-    {
+    public void process(String[] arguments) {
         if (arguments.length >= 1) {
 
             List<Log> logList = parseFile(arguments[0]);
@@ -36,7 +36,7 @@ public class FileProcessor {
     }
 
     private List<Log> parseFile(String fileName) {
-        List<Log> list = initList();
+        List<Log> logList = initList();
         System.out.println(fileName);
         try {
             BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)));
@@ -61,8 +61,9 @@ public class FileProcessor {
                     while (m.find()) {
                         uri = (m.group(1));
                     }
+
                     int logTime = Integer.parseInt(array[1].split(":")[0]);
-                    Log log = list.get(logTime);
+                    Log log = logList.get(logTime);
                     log.addTimer(time);
                     log.putMethod(method);
                     log.putURI(uri);
@@ -71,18 +72,18 @@ public class FileProcessor {
 
         } catch (FileNotFoundException e) {
             System.err.println("File Name not correct");
-            return new ArrayList<>();
+            return Collections.<Log>emptyList();
         } catch (IOException e) {
             System.err.println("File could not be read");
-            return new ArrayList<>();
+            return Collections.<Log>emptyList();
         }
 
-        return list;
+        return logList;
     }
 
     private List<Log> initList() {
         List<Log> logList = new ArrayList<>();
-        for (int c = 0; c < TOTALHOURS; c++) {
+        for (int c = 0; c < TOTAL_HOURS; c++) {
             logList.add(new Log(c));
         }
         return logList;
